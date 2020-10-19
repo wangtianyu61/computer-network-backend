@@ -41,7 +41,20 @@ def user_register(request):
     ## add the user info
     try:
         with transaction.atomic():
-            UserInfo.objects.create(**dict_data)
+            account_infos = dict_data["payment_accounts"]
+            del dict_data["payment_accounts"]
+            ### add the UserInfo db
+            new_user = UserInfo.objects.create(**dict_data)
+            ### add the UserAccount db
+            for index in range(len(account_infos)):
+                account_detail = account_infos[index]
+                new_user_account = UserAccountType()
+                new_user_account.user_id = new_user
+                new_user_account.payment_type = account_detail["payment_type"]
+                new_user_account.account_id = account_detail["account_id"]
+                if index == 0:
+                    new_user_account.priority = 1
+                new_user_account.save()
             ### add successfully
             register_info["success"] = 1
             register_info["user_id"] = max_user_id + 1

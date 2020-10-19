@@ -24,6 +24,7 @@ class UserAccountType(models.Model):
     user_id = models.ForeignKey(UserInfo, on_delete = models.CASCADE)
     payment_type = models.TextField()
     account_id = models.TextField()
+    priority = models.IntegerField(default = 0)
     class Meta:
         db_table = "UserAccountType"
 
