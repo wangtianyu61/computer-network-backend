@@ -19,14 +19,13 @@ class UserInfo(models.Model):
     def __str__(self):
         return self.username
 
-class UserTransactionType(models.Model):
+class UserAccountType(models.Model):
+    serial_id = models.BigAutoField(primary_key = True)
     user_id = models.ForeignKey(UserInfo, on_delete = models.CASCADE)
-    transaction_type = models.IntegerField()
-    acount_id = models.TextField()
-    priority = models.IntegerField()
+    payment_type = models.TextField()
+    account_id = models.TextField()
     class Meta:
-        unique_together = ("user_id", "transaction_type")
-        db_table = "UserTransactionType"
+        db_table = "UserAccountType"
 
 class Entry(models.Model):
     entry_id = models.BigAutoField(primary_key = True)
