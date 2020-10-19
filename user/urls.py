@@ -9,7 +9,7 @@ urlpatterns = [
     url('^add_book_entry', views_book.add_book_entry),
     url('^delete_book_entry', views_book.delete_book_entry),
     url('^update_book_entry', views_book.update_book_entry),
-    url('^book', views_book.book_summary),
+    url('^book$', views_book.book_summary),
     url('^book/(?P<pk>\d+)', views_book.book_detail),
     #order
 ]

@@ -38,7 +38,7 @@ class Entry(models.Model):
     description = models.TextField(null = True)
     customer_inventory = models.IntegerField()
     seller_inventory = models.IntegerField()
-    status = models.IntegerField()
+    status = models.IntegerField(default = 1)
     seller_id = models.BigIntegerField()
     class Meta:
         db_table = "Entry"

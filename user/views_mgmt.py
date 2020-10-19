@@ -27,7 +27,7 @@ def user_register(request):
         register_info["message"] = "It is not a valid phone number!"
         return http.JsonResponse(register_info)
     #### truncate with the phone number in db
-    if len(UserInfo.objects.filter(phone = user_info["phone"])) == 1:
+    if len(UserInfo.objects.filter(telephone = user_info["phone"])) == 1:
         register_info["message"] = "Phone truncated!"
     ### username
     if len(user_info["username"])>10:
@@ -41,14 +41,18 @@ def user_register(request):
     ## add the user info
     try:
         with transaction.atomic():
-            account_infos = dict_data["payment_accounts"]
-            del dict_data["payment_accounts"]
+            account_infos = user_info["payment_accounts"]
+            del user_info["payment_accounts"]
             ### add the UserInfo db
-            new_user = UserInfo.objects.create(**dict_data)
+            user_info['telephone'] = user_info['phone']
+            del user_info['phone']
+            print(user_info)
+            new_user = UserInfo.objects.create(**user_info)
             ### add the UserAccount db
             for index in range(len(account_infos)):
                 account_detail = account_infos[index]
                 new_user_account = UserAccountType()
+                new_user_account.serial_id = len(UserAccountType.objects.all()) + 1
                 new_user_account.user_id = new_user
                 new_user_account.payment_type = account_detail["payment_type"]
                 new_user_account.account_id = account_detail["account_id"]
@@ -70,26 +74,27 @@ def user_login(request):
     login_info = {"success":0, "username":"", "avatar":"","user_id":0}
     check_name = user_info["username_or_phone"]
     ## search by name
+    print(len(check_name))
     if len(check_name) < 11:
         try:
-            user_detail = Userinfo.objects.get(user_id = check_name, password = user_info["password"])
+            user_detail = UserInfo.objects.get(username = check_name, password = user_info["password"])
             login_info["success"] = 1
             login_info["username"] = user_detail.username
             login_info["avatar"] = user_detail.avatar
             login_info["user_id"] = user_detail.user_id
         ## not found
         except Exception as e:
-            pass
+            print(e)
     ## search by phone number
     else:
         try:
-            user_detail = Userinfo.objects.get(phone = check_name, password = user_info["password"])
+            user_detail = UserInfo.objects.get(telephone = check_name, password = user_info["password"])
             login_info["success"] = 1
             login_info["username"] = user_detail.username
             login_info["avatar"] = user_detail.avatar
             login_info["user_id"] = user_detail.user_id
         ## not found
         except Exception as e:
-            pass
+            print(e)
     return http.JsonResponse(login_info)
             

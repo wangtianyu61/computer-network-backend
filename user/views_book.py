@@ -24,7 +24,7 @@ def book_of(request, pk):
                         "original_price":select_entry.original_price,
                         "inventory":select_entry.seller_inventory}
             all_entry_info.append(entry_info)
-    return http.JsonResponse({"book_info":all_entry_info}, strict = False)
+    return http.JsonResponse({"book_info":all_entry_info})
 
 # add the book entry for the seller
 @transaction.atomic
@@ -32,7 +32,7 @@ def add_book_entry(request):
     book_info = json.loads(request.body, strict = False)
     add_info = {"success":0, "message":""} 
     ## check the logic
-    if book_info["original_price"] < 0:
+    if "original_price" in book_info.keys() and book_info["original_price"] < 0:
         add_info["message"] = "The original price cannot be negative!"
         return http.JsonResponse(add_info)
     if book_info["price"] < 0:
@@ -41,22 +41,22 @@ def add_book_entry(request):
     if book_info["inventory"] < 0:
         add_info["message"] = "The inventory cannot be negative!"
         return http.JsonResponse(add_info)
-    entry_images = dict_data['pictures']
+    entry_images = book_info['pictures']
     save_tag = transaction.savepoint()
     try:
         with transaction.atomic():
-            del dict_data['pictures']
+            del book_info['pictures']
             ## add into the entry info
             entry_info = Entry()
-            entry_info.seller_id = dict_data['seller_id']
-            entry_info.name = dict_data['name']
-            entry_info.author = dict_data['author']
-            entry_info.category = dict_data['category']
-            entry_info.original_price = dict_data['original price']
-            entry_info.price = dict_data['price']
-            entry_info.description = dict_data['description']
-            entry_info.customer_inventory = dict_data['inventory']
-            entry_info.seller_inventory = dict_data['inventory']
+            entry_info.seller_id = book_info['seller_id']
+            entry_info.name = book_info['name']
+            entry_info.author = book_info['author']
+            entry_info.category = book_info['category']
+            entry_info.original_price = book_info['original_price']
+            entry_info.price = book_info['price']
+            entry_info.description = book_info['description']
+            entry_info.customer_inventory = book_info['inventory']
+            entry_info.seller_inventory = book_info['inventory']
             #check for the manager
             entry_info.status = 1
             entry_info.save()
@@ -70,6 +70,7 @@ def add_book_entry(request):
                 new_entry_image.save()
             add_info["success"] = 1
     except Exception as e:
+        print(e)
         transaction.savepoint_rollback(save_tag)
         add_info["message"] = "Add error!"
     return http.JsonResponse(add_info)
@@ -123,13 +124,19 @@ def update_book_entry(request):
     except Exception as e:
         update_info["message"] = "Update Error!"
         transaction.savepoint_rollback(update_info)
-    return http.JsonResponse(update_info, strict = False)
+    return http.JsonResponse(update_info)
 
 def book_summary(request):
     #randomly show 10 books on the main page
     available_book = Entry.objects.filter(customer_inventory__gte = 0)
-    available_entry_id = [entry['entry_id'] for entry in available_book]
-    random_entries = random.sample(available_entry_id, show_number)
+    #too few books
+    if len(available_book) < show_number:
+        random_entries = available_book
+    else:
+        available_entry_id = [entry.entry_id for entry in available_book]
+        random_entries_id = random.sample(available_entry_id, show_number)
+        random_entries = [Entry.objects.get(entry_id = random_entry_id) for random_entry_id in random_entries_id]
+
     book_info = []
     for select_entry in random_entries:
         entry_info = {"entry_id":select_entry.entry_id,
@@ -140,7 +147,7 @@ def book_summary(request):
                         "original_price":select_entry.original_price,
                         "inventory":select_entry.customer_inventory}
         book_info.append(entry_info)
-    return http.JsonResponse({"book_info":book_info}, strict = False)
+    return http.JsonResponse({"book_info":book_info})
 
 def book_detail(request, pk):
     #show the detail information of one book
@@ -156,7 +163,7 @@ def book_detail(request, pk):
         comment_detail = {"comment_time":comment_item.comment_time, "entry_comment":comment_item.entry_comment,
                             "entry_feedback":comment_item.entry_feedback}
         entry_detail["entry_comment"].append(comment_detail)
-    return http.JsonResponse(entry_detail, strict = False)
+    return http.JsonResponse(entry_detail)
 
 
 #search the book vaguely in the text
