@@ -82,4 +82,17 @@ def order_book_confirm(request):
     return http.HttpResponse()
 
 def receive_book_confirm(request):
-    pass
+    print(request.body)
+    data = eval(str(request.body,encoding='utf-8'))
+    print(data)
+    customer_id = data['customer_id']
+    order_id = data['order_id']
+    entry_id = data['entry_id']
+    result = {'success':0,'message':''}
+    try:
+        order_detail = OrderDetail.objects.get(order_id=order_id,entry_id=entry_id)
+        order_detail.status = 2
+        result['success'] = 1
+    except Exception as e:
+        result['message'] = str(e)
+    return http.JsonResponse(result,safe=False,json_dumps_params={'ensure_ascii':False})
