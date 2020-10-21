@@ -19,7 +19,7 @@ def order_book(request):
     order_info = data['order_detail']
 
     result = {'success':1,'order_id':-1,'postage':-1}
-    for bill in order_info:
+    for bill in order_info: # 判断是否库存足够
         entry_id = bill[0]
         order_amount = bill[1]
         book = Entry.objects.get(entry_id=entry_id)
@@ -29,7 +29,7 @@ def order_book(request):
             result['success'] = 0
         if inventory < order_amount: result['success'] = 0
         if result['success'] == 0: break
-    if result['success'] == 1:
+    if result['success'] == 1: # Create OrderInfo
         new_order = OrderInfo()
         result['order_id'] = new_order.order_id
         result['postage'] = len(order_info) * bill_postage
