@@ -13,5 +13,6 @@ urlpatterns = [
     url('^book/(?P<pk>\d+)', views_book.book_detail),
     url('^search_book',views_book.search_book),
     #order
-    url('^order_book',views_order.order_book)
+    url('^order_book',views_order.order_book),
+    url('^order_book_confirm',views_order.order_book_confirm)
 ]
