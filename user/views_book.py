@@ -166,10 +166,39 @@ def book_detail(request, pk):
     return http.JsonResponse(entry_detail)
 
 
-#search the book vaguely in the text
+#search the book vaguely in the book name
 def search_book(request):
     #add into one type
-    pass
+    print(request.body)
+    data = eval(str(request.body,encoding='utf-8'))
+    print(data)
+    assert 'book_name' in data
+    book_name = data['book_name']
+    print(book_name)
+    if book_name != '':
+        all_books = Entry.objects.filter(name__contains=book_name)
+    print(len(all_books))
+
+    result_book_list = []
+
+    if len(all_books) == 0:
+        pass
+    
+    for book in all_books:
+        id = book.entry_id
+        book_detail = {"entry_id":id, "name":book.name, "author":book.author, "price":book.price, 
+                    "original_price":book.original_price,"category":book.category, "description":book.description,
+                    "inventory":book.customer_inventory}
+        book_images = EntryImage.objects.filter(entry_id=id)
+        book_detail['image'] = [book_image.image for book_image in book_images]
+        book_detail['entry_comment'] = []
+        book_comments = EntryComment.objects.filter(entry_id=id)
+        for comment in book_comments:
+            comment_detail = {"comment_time":comment.comment_time, "entry_comment":comment.entry_comment,
+                            "entry_feedback":comment.entry_feedback}
+            book_detail['entry_comment'].append(comment_detail)
+        result_book_list.append(book_detail)
+    return JsonResponse({'list':result_book_list},safe=False,json_dumps_params={'ensure_ascii':False})
 
 #search the book by type:
 def search_book_type(request):
