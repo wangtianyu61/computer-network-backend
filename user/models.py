@@ -36,8 +36,8 @@ class Entry(models.Model):
     original_price = models.FloatField(null = True)
     category = models.TextField(null = True)
     description = models.TextField(null = True)
-    customer_inventory = models.IntegerField()
-    seller_inventory = models.IntegerField()
+    customer_inventory = models.IntegerField() # 顾客下单时修改
+    seller_inventory = models.IntegerField() # 卖家发货时修改
     status = models.IntegerField(default = 1)
     seller_id = models.BigIntegerField()
     class Meta:
