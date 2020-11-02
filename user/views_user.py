@@ -37,6 +37,14 @@ def user_order_all(request):
     res = JsonResponse(query_res_list, safe = False)
     return res        
 
+def user_order_all(request, pk):
+    select_order = OrderDetail.objects.filter(order_id = pk)
+    user_id = data_dict['user_id']
+    query_res_list = list(order.objects.filter(order_id = user_id).values())
+    # need to add the entry name if possible 
+    res = JsonResponse(query_res_list, safe = False)
+    return res        
+
 def user_order_deliver(request):
     data_dict = json.loads(str(request.body,encoding='utf-8'))
     user_id = data_dict['user_id']

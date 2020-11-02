@@ -7,8 +7,8 @@ from django.db.models import Max
 from django.db import transaction
 from django.db import IntegrityError
 from django.db.models import Sum, Count, Max, Min, Avg
+from user.param import *
 
-POSTAGE = 3
 
 def order_book(request):
     bill_postage = POSTAGE
