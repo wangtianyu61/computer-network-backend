@@ -13,10 +13,21 @@ from django.http.response import *
 def user_info(request):
     data_dict = json.loads(str(request.body,encoding='utf-8'))
     user_id = data_dict['user_id']
-    target_obj = UserInfo.objects.get(user_id = user_id)
-    dict_obj = model_to_dict(target_obj)
-    print(dict_obj)
-    res = JsonResponse(dict_obj, safe = False)
+    try:
+        target_obj = UserInfo.objects.get(user_id = user_id)
+        dict_obj = model_to_dict(target_obj)
+        #print(dict_obj)
+        # add the transaction type given this user
+        account_obj = UserAccountType.objects.filter(user_id = user_id)
+        dict_obj['account'] = []
+        for account_detail in account_obj:
+            dict_obj['account'].append({"payment_type":account_detail.payment_type,
+                                        "account_id":account_detail.account_id,
+                                        "priority":account_detail.priority})
+        res = JsonResponse(dict_obj, safe = False)
+    except Exception as e:
+        print(e)
+        res = JsonResponse({}, safe = False)
     return res
 
 def user_order_all(request):
