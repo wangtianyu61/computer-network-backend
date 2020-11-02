@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from user import views_book, views_mgmt, views_order
+from user import views_book, views_mgmt, views_order, views_user
 urlpatterns = [
     #management
     url('^register', views_mgmt.user_register),
@@ -15,5 +15,11 @@ urlpatterns = [
     #order
     url('^order_book',views_order.order_book),
     url('^order_book_confirm',views_order.order_book_confirm),
-    url('^receive_book_confirm',views_order.receive_book_confirm)
+    url('^receive_book_confirm',views_order.receive_book_confirm),
+    #user
+    url('^user_info', views_user.user_info),
+    url('^user_order_all', views_user.user_order_all),
+    url('^user_order_deliver', views_user.user_order_deliver),
+    url('^user_order_transport', views_user.user_order_transport),
+    url('^user_order_comment', views_user.edit_user_info),
 ]
