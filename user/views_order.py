@@ -8,6 +8,7 @@ from django.db import transaction
 from django.db import IntegrityError
 from django.db.models import Sum, Count, Max, Min, Avg
 from user.param import *
+import datetime
 
 
 def order_book(request):
@@ -20,8 +21,8 @@ def order_book(request):
 
     result = {'success':1,'order_id':-1,'postage':-1}
     for bill in order_info: # 判断是否库存足够
-        entry_id = bill[0]
-        order_amount = bill[1]
+        entry_id = bill["entry_id"]
+        order_amount = bill["order_number"]
         book = Entry.objects.get(entry_id=entry_id)
         try:
             inventory = book.customer_inventory
@@ -80,6 +81,32 @@ def order_book_confirm(request):
             order_detail.status = 0
             order_detail.save()
     return http.HttpResponse()
+
+#see the order for the seller
+def order_of(request, pk):
+    select_orders = OrderDetail.objects.filter(seller_id = pk)
+    query_res_list = list(select_orders.values())
+    # need to add the entry name if possible 
+    res = JsonResponse(query_res_list, safe = False)
+    return res    
+
+## seller pack the book
+def pack_book_update(request):
+    data = eval(str(request.body,encoding='utf-8'))
+    print(data)
+    pack_info = {"success":1, "message":""}
+    try:
+        order_id = data['order_id']
+        entry_id = data['entry_id']
+        order_info = OrderInfo.objects.get(order_id = order_id)          
+        order_detail = OrderDetail.objects.get(order_id = order_info, entry_id = entry_id)
+        order_detail.status = 1
+        order_detail.save()
+    except Exception as e:
+        pack_info['message'] = str(e)
+        pack_info["success"] = 0 
+    return http.JsonResponse(pack_info)
+
 
 def receive_book_confirm(request):
     print(request.body)

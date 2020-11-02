@@ -56,7 +56,8 @@ class EntryComment(models.Model):
     entry_comment_id = models.IntegerField()
     entry_comment = models.TextField()
     comment_time = models.DateTimeField()
-    entry_feedback = models.TextField()
+    entry_feedback = models.TextField(null = True)
+    feedback_time = models.DateTimeField(null = True)
     class Meta:
         unique_together = ("entry_id", "entry_comment_id")
         db_table = "EntryComment"

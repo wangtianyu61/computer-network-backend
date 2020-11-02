@@ -9,6 +9,7 @@ from django.db import IntegrityError
 from django.db.models import Sum, Count, Max, Min, Avg
 from django.forms.models import model_to_dict
 from django.http.response import *
+from datetime import datetime
 
 def user_info(request):
     data_dict = json.loads(str(request.body,encoding='utf-8'))
@@ -37,10 +38,9 @@ def user_order_all(request):
     res = JsonResponse(query_res_list, safe = False)
     return res        
 
-def user_order_all(request, pk):
-    select_order = OrderDetail.objects.filter(order_id = pk)
-    user_id = data_dict['user_id']
-    query_res_list = list(order.objects.filter(order_id = user_id).values())
+def user_order_detail(request, pk):
+    order_user_id = OrderInfo.objects.get(order_id = pk)
+    query_res_list = list(OrderDetail.objects.filter(order_id = order_user_id).values())
     # need to add the entry name if possible 
     res = JsonResponse(query_res_list, safe = False)
     return res        
@@ -101,4 +101,28 @@ def edit_user_info(request):
         edit_info['message'] = str(e)
     return http.JsonResponse(edit_info)
 
+def entry_comment(request):
+    comment_info = json.loads(request.body, strict = False)
+    add_info = {"success":1, "message":""} 
+    try:
+        entry_info = Entry.objects.get(entry_id = comment_info["entry_id"])
+        entry_comment_len = len(EntryComment.objects.filter(entry_id = comment_info["entry_id"]))
+        EntryComment.objects.create(entry_id = entry_info, entry_comment_id = entry_current_comment_len + 1, 
+                                comment_time = datetime.now())
+    except Exception as e:
+        add_info["message"] = str(e)
+        add_info["success"] = 0
+    return http.JsonResponse(add_info, safe = False)
+                                
+def entry_feedback(request):
+    comment_info = json.loads(request.body, strict = False)
+    add_info = {"success":1, "message":""}
+    try:
+        entry_comment = EntryComment.objects.get(comment_info["entry_id"], comment_info["entry_comment_id"])
+        entry_comment.entry_feedback = comment_info["feedback"]
+        entry_comment.feedback_time = datetime.now() 
+    except Exception as e:
+        add_info["message"] = str(e)
+        add_info["success"] = 0
+    return http.JsonResponse(add_info, safe = False)
 
