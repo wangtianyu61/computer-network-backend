@@ -58,31 +58,39 @@ def user_order_finished(request):
     res = JsonResponse(query_res_list, safe = False)
     return res        
   
-
+@transaction.atomic
 def edit_user_info(request):
     data_dict = json.loads(str(request.body,encoding='utf-8'))
     user_id = data_dict['user_id']
-    avatar = data_dict['avatar']
-    real_name = data_dict['real_name']
-    age = data_dict['age']
-    sex = data_dict['sex']
-    certificationType = data_dict['certificationType']
-    certificationNumber = data_dict['certificationNumber']
-    address = data_dict['address']
-    username = data_dict['username']
-    password = data_dict['password']
-    telephone = data_dict['telephone']
-    target_user = UserInfo.objects.get(user_id = user_id)
-    target_user.avatar = avatar
-    target_user.real_name = real_name
-    target_user.age = age
-    target_user.sex = sex
-    target_user.certificationType = certificationType
-    target_user.certificationNumber = certificationNumber
-    target_user.address = address
-    target_user.password = password
-    target_user.telephone = telephone
-    target_user.save()
 
+    save_tag = transaction.savepoint()
+    edit_info = {"success":1, "message":""}
+    try:
+        with transaction.atomic():
+            #change the user basic info
+            target_user = UserInfo.objects.filter(user_id = user_id)
+            account_info = data_dict['account']
+            del data_dict['account']
+
+            target_user.update(**data_dict)
+
+            #change the account info    
+            ##delete the past
+            old_account = UserAccountType.objects.filter(user_id = user_id).delete()
+            ##add the new
+            for account_detail in account_info:
+                account_detail['user_id'] = target_user
+                user_account_info = UserAccountType.objects.create(serial_id = len(UserAccountType.objects.all()) + 1,
+                                                                    user_id = target_user[0], 
+                                                                    payment_type = account_detail['payment_type'],
+                                                                    account_id = account_detail['account_id'],
+                                                                    priority = account_detail['priority'])
+                                                                    
+                
+        #did not change correctly and need to rollback
+    except Exception as e:
+        edit_info['success'] = 0
+        edit_info['message'] = str(e)
+    return http.JsonResponse(edit_info)
 
 

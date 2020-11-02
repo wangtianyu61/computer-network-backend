@@ -8,7 +8,7 @@ class UserInfo(models.Model):
     age = models.IntegerField(null = True)
     sex = models.IntegerField(null = True)
     certificationType = models.IntegerField(null = True)
-    certificationNumber = models.BigIntegerField(null = True)
+    certificationNumber = models.TextField(null = True)
     address = models.TextField()
     username = models.TextField()
     password = models.TextField()

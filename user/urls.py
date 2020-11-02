@@ -21,5 +21,5 @@ urlpatterns = [
     url('^user_order_all', views_user.user_order_all),
     url('^user_order_deliver', views_user.user_order_deliver),
     url('^user_order_transport', views_user.user_order_transport),
-    url('^user_order_comment', views_user.edit_user_info),
+    url('^edit_user_info', views_user.edit_user_info),
 ]
