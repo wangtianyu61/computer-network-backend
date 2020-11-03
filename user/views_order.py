@@ -87,6 +87,12 @@ def order_of(request, pk):
     select_orders = OrderDetail.objects.filter(seller_id = pk)
     query_res_list = list(select_orders.values())
     # need to add the entry name if possible 
+    for query_res_elem in query_res_list:
+        # add the book name
+        query_res_elem["book_name"] = Entry.objects.get(entry_id = query_res_elem["entry_id"]).name 
+        #find and add the corresponding customer address
+        customerid = OrderInfo.objects.get(order_id = query_res_elem["order_id"]).customer_id
+        query_res_elem["customer_address"] = UserInfo.objects.get(user_id = customerid).address
     res = JsonResponse(query_res_list, safe = False)
     return res    
 

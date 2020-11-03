@@ -154,14 +154,14 @@ def book_detail(request, pk):
     entry_info = Entry.objects.get(entry_id = pk)
     entry_detail = {"entry_id":entry_info.entry_id, "name":entry_info.name, "author":entry_info.author,
                     "price":entry_info.price, "original_price":entry_info.original_price,"category":entry_info.category,
-                    "description":entry_info.description, "inventory":entry_info.customer_inventory}
+                    "description":entry_info.description, "inventory":entry_info.customer_inventory, "seller_id":entry_info.seller_id}
     entry_images = EntryImage.objects.filter(entry_id = pk)
     entry_detail["image"] = [entry_image.image for entry_image in entry_images]
     entry_detail["entry_comment"] = []
     entry_comments = EntryComment.objects.filter(entry_id = pk)
     for comment_item in entry_comments:
-        comment_detail = {"comment_time":comment_item.comment_time, "entry_comment":comment_item.entry_comment,
-                            "entry_feedback":comment_item.entry_feedback}
+        comment_detail = {"entry_comment_id":comment_item.entry_comment_id,"comment_time":comment_item.comment_time.strftime('%Y%m%d %H:%M:%S'), 
+                            "entry_comment":comment_item.entry_comment,"entry_feedback":comment_item.entry_feedback}
         entry_detail["entry_comment"].append(comment_detail)
     return http.JsonResponse(entry_detail)
 
@@ -177,6 +177,8 @@ def search_book(request):
     print(book_name)
     if book_name != '':
         all_books = Entry.objects.filter(name__contains=book_name)
+    else:
+        all_books = Entry.objects.all()
     print(len(all_books))
 
     result_book_list = []
@@ -193,16 +195,12 @@ def search_book(request):
         book_detail['image'] = [book_image.image for book_image in book_images]
         book_detail['entry_comment'] = []
         book_comments = EntryComment.objects.filter(entry_id=id)
-        for comment in book_comments:
-            comment_detail = {"comment_time":comment.comment_time, "entry_comment":comment.entry_comment,
-                            "entry_feedback":comment.entry_feedback}
-            book_detail['entry_comment'].append(comment_detail)
+        for comment_item in book_comments:
+            comment_detail = {"entry_comment_id":comment_item.entry_comment_id,"comment_time":comment_item.comment_time.strftime('%Y%m%d %H:%M:%S'), 
+                                "entry_comment":comment_item.entry_comment,"entry_feedback":comment_item.entry_feedback}
+            book_comments["entry_comment"].append(comment_detail)
         result_book_list.append(book_detail)
     return JsonResponse({'list':result_book_list},safe=False,json_dumps_params={'ensure_ascii':False})
-
-#search the book by type:
-def search_book_type(request):
-    pass
 
 
 

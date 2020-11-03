@@ -42,6 +42,8 @@ def user_order_detail(request, pk):
     order_user_id = OrderInfo.objects.get(order_id = pk)
     query_res_list = list(OrderDetail.objects.filter(order_id = order_user_id).values())
     # need to add the entry name if possible 
+    for query_res_elem in query_res_list:
+        query_res_elem["entry_name"] = Entry.objects.get(entry_id = query_res_elem["entry_id"]).name 
     res = JsonResponse(query_res_list, safe = False)
     return res        
 
