@@ -82,6 +82,7 @@ def user_login(request):
             login_info["username"] = user_detail.username
             login_info["avatar"] = user_detail.avatar
             login_info["user_id"] = user_detail.user_id
+            #print(login_info)
         ## not found
         except Exception as e:
             print(e)
@@ -93,6 +94,7 @@ def user_login(request):
             login_info["username"] = user_detail.username
             login_info["avatar"] = user_detail.avatar
             login_info["user_id"] = user_detail.user_id
+            #print(login_info)
         ## not found
         except Exception as e:
             print(e)
