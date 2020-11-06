@@ -54,8 +54,8 @@ def user_register(request):
                 new_user_account = UserAccountType()
                 new_user_account.serial_id = len(UserAccountType.objects.all()) + 1
                 new_user_account.user_id = new_user
-                new_user_account.payment_type = account_detail["payment_type"]
-                new_user_account.account_id = account_detail["account_id"]
+                new_user_account.payment_type = account_detail["type"]
+                new_user_account.account_id = account_detail["account"]
                 if index == 0:
                     new_user_account.priority = 1
                 new_user_account.save()
