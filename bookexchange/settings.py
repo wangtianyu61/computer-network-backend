@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'CN_Project',
         'USER': 'root',
-        'PASSWORD':'19990529',
+        'PASSWORD':'sem123',
         'HOST':'localhost',
         'PORT':3306,
     }
@@ -129,6 +129,7 @@ STATIC_URL = '/static/'
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHTELIST = [
+    'http://localhost',
     'http://localhost',
 ]
 CORS_ALLOW_METHODS = [
