@@ -28,7 +28,7 @@ def order_book(request):
             inventory = book.customer_inventory
         except:
             result['success'] = 0
-        if inventory < order_amount: result['success'] = 0
+        if int(inventory) < int(order_amount): result['success'] = 0
         if result['success'] == 0: break
     if result['success'] == 1: # Create OrderInfo
         new_order = OrderInfo()
@@ -142,10 +142,13 @@ def receive_book_confirm(request):
 
 
 def test_view_order_info(request):
-    # orders = OrderInfo.objects.filter()
-    # for order in orders:
-    #     print(order.order_id)
-    #     print('*'*20)
+    books = Entry.objects.filter()
+    for book in books:
+        print(book.entry_id)
+        print(book.customer_inventory)
+        # book.customer_inventory = 100
+        # book.save()
+        print('*'*20)
 
     # entry = Entry.objects.get(entry_id=1)
     # entry.customer_inventory += 100
