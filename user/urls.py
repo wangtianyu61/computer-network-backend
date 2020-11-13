@@ -11,7 +11,7 @@ urlpatterns = [
     url('^update_book_entry', views_book.update_book_entry),
     url('^book$', views_book.book_summary),
     url('^book/(?P<pk>\d+)', views_book.book_detail),
-    url('search_book',views_book.search_book),
+    url('^search_book',views_book.search_book),
     #order
     url('^order_book',views_order.order_book),
     url('^confirm_order',views_order.confirm_order_book),
