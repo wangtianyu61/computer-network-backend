@@ -11,6 +11,46 @@ from user.param import *
 import datetime
 
 
+# def new_order_book(request):
+#     postage = POSTAGE
+#     print(request.body)
+#     data = eval(str(request.body,encoding='utf-8'))
+#     print(data)
+#     customer_id = data['customer_id'] # customer id
+#     order_info = data['order_detail']
+#     result = {'success':1, 'message':''}
+#     for bill in order_info: # 判断是否库存足够
+#         entry_id = bill["entry_id"]
+#         order_amount = bill["order_number"]
+#         book = Entry.objects.get(entry_id=entry_id)
+#         try:
+#             inventory = book.customer_inventory
+#         except:
+#             result['success'] = 0
+#         if int(inventory) < int(order_amount):
+#             result['success'] = 0
+#             result['message'] = "Books not enough"
+#         if result['success'] == 0: break
+#     if result['success'] == 1:
+#         # Create OrderInfo
+#         new_order = OrderInfo()
+#         result['postage'] = len(order_info) * bill_postage
+#         new_order.postageFee = result['postage']
+#         new_order.customer_id = customer_id
+#         new_order.order_time = datetime.datetime.now()
+#         new_order.paymentType = 0
+#         new_order.serial = -1
+#         new_order.save()
+#         print(new_order.order_id)
+#         result['order_id'] = new_order.order_id
+#         new_order.serial = new_order.order_id + 100
+#         new_order.save()
+#         # Add Order Detail
+
+#     else:
+#         return http.JsonResponse(result,safe=False,json_dumps_params={'ensure_ascii':False})
+    
+
 def order_book(request):
     bill_postage = POSTAGE
     print(request.body)

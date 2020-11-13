@@ -182,9 +182,6 @@ def search_book(request):
     print(len(all_books))
 
     result_book_list = []
-
-    if len(all_books) == 0:
-        pass
     
     for book in all_books:
         id = book.entry_id
@@ -200,7 +197,7 @@ def search_book(request):
                                 "entry_comment":comment_item.entry_comment,"entry_feedback":comment_item.entry_feedback}
             book_comments["entry_comment"].append(comment_detail)
         result_book_list.append(book_detail)
-    return JsonResponse({'list':result_book_list},safe=False,json_dumps_params={'ensure_ascii':False})
+    return http.JsonResponse({'list':result_book_list},safe=False,json_dumps_params={'ensure_ascii':False})
 
 
 
