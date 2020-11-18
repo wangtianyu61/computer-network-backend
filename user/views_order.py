@@ -144,8 +144,10 @@ def order_of(request, pk):
         query_res_elem["book_name"] = Entry.objects.get(entry_id = query_res_elem["entry_id"]).name 
         #find and add the corresponding customer address
         customerid = OrderInfo.objects.get(order_id = query_res_elem["order_id_id"]).customer_id
+        query_res_elem["status"] = OrderInfo.objects.get(order_id = query_res_elem["order_id_id"]).status
         query_res_elem["customer_address"] = UserInfo.objects.get(user_id = customerid).address
-    res = JsonResponse(query_res_list, safe = False)
+        query_res_elem["order_id"] = query_res_elem["order_id_id"]
+    res = JsonResponse({"order_info":query_res_list}, safe = False)
     return res    
 
 ## seller pack the book
@@ -157,9 +159,9 @@ def pack_book_update(request):
         order_id = data['order_id']
         entry_id = data['entry_id']
         order_info = OrderInfo.objects.get(order_id = order_id)          
-        order_detail = OrderDetail.objects.get(order_id = order_info, entry_id = entry_id)
-        order_detail.status = 1
-        order_detail.save()
+        #order_detail = OrderDetail.objects.get(order_id = order_info, entry_id = entry_id)
+        order_info.status = 1
+        order_info.save()
     except Exception as e:
         pack_info['message'] = str(e)
         pack_info["success"] = 0 
