@@ -106,6 +106,7 @@ def confirm_order_book(request):
         customer_id = data['customer_id']
         payment_type = data['PaymentType']
         order_info = data['order_detail']
+        receive_type = data['ReceiveType']
         # Update OrderInfo
         order.paymentType = payment_type
         order.save()
