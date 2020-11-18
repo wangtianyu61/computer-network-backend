@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'bookexchange.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'CN_Project',
+        'NAME': 'CN_Project_v1',
         'USER': 'root',
         'PASSWORD':'19990529',
         'HOST':'localhost',

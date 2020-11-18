@@ -69,6 +69,7 @@ class OrderInfo(models.Model):
     order_time = models.DateTimeField()
     postageFee = models.FloatField()
     paymentType = models.IntegerField()
+    status = models.IntegerField(default = 0)
     class Meta:
         db_table = "OrderInfo"
 
@@ -79,7 +80,6 @@ class OrderDetail(models.Model):
     seller_id = models.BigIntegerField()
     deliver_time = models.DateTimeField(null = True)
     postageFee = models.FloatField()
-    status = models.IntegerField()
     receiveType = models.IntegerField()
     class Meta:
         db_table = "OrderDetail"

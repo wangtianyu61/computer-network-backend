@@ -7,6 +7,7 @@ from django.db.models import Max
 from django.db import transaction
 from django.db import IntegrityError
 from django.db.models import Sum, Count, Max, Min, Avg
+from django.http.response import *
 
 @transaction.atomic
 def user_register(request):
@@ -54,8 +55,8 @@ def user_register(request):
                 new_user_account = UserAccountType()
                 new_user_account.serial_id = len(UserAccountType.objects.all()) + 1
                 new_user_account.user_id = new_user
-                new_user_account.payment_type = account_detail["type"]
-                new_user_account.account_id = account_detail["account"]
+                new_user_account.payment_type = account_detail["payment_type"]
+                new_user_account.account_id = account_detail["account_id"]
                 if index == 0:
                     new_user_account.priority = 1
                 new_user_account.save()
@@ -82,7 +83,6 @@ def user_login(request):
             login_info["username"] = user_detail.username
             login_info["avatar"] = user_detail.avatar
             login_info["user_id"] = user_detail.user_id
-            #print(login_info)
         ## not found
         except Exception as e:
             print(e)
@@ -94,7 +94,6 @@ def user_login(request):
             login_info["username"] = user_detail.username
             login_info["avatar"] = user_detail.avatar
             login_info["user_id"] = user_detail.user_id
-            #print(login_info)
         ## not found
         except Exception as e:
             print(e)

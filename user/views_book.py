@@ -8,6 +8,7 @@ from django.db import transaction
 from django.db import IntegrityError
 from django.db.models import Sum, Count, Max, Min, Avg
 from user.param import *
+from django.http.response import *
 import random
 
 #the sell gets the book of his own.
@@ -24,6 +25,7 @@ def book_of(request, pk):
                         "original_price":select_entry.original_price,
                         "inventory":select_entry.seller_inventory}
             all_entry_info.append(entry_info)
+    print(all_entry_info)
     return http.JsonResponse({"book_info":all_entry_info})
 
 # add the book entry for the seller
@@ -147,6 +149,7 @@ def book_summary(request):
                         "original_price":select_entry.original_price,
                         "inventory":select_entry.customer_inventory}
         book_info.append(entry_info)
+    print(book_info)
     return http.JsonResponse({"book_info":book_info})
 
 def book_detail(request, pk):
@@ -170,7 +173,7 @@ def book_detail(request, pk):
 def search_book(request):
     #add into one type
     print(request.body)
-    data = eval(str(request.body,encoding='utf-8'))
+    data =  eval(str(request.body,encoding='utf-8'))
     print(data)
     assert 'book_name' in data
     book_name = data['book_name']
@@ -182,9 +185,6 @@ def search_book(request):
     print(len(all_books))
 
     result_book_list = []
-
-    if len(all_books) == 0:
-        pass
     
     for book in all_books:
         id = book.entry_id
@@ -200,7 +200,7 @@ def search_book(request):
                                 "entry_comment":comment_item.entry_comment,"entry_feedback":comment_item.entry_feedback}
             book_comments["entry_comment"].append(comment_detail)
         result_book_list.append(book_detail)
-    return JsonResponse({'list':result_book_list},safe=False,json_dumps_params={'ensure_ascii':False})
+    return http.JsonResponse({'list':result_book_list},safe=False,json_dumps_params={'ensure_ascii':False})
 
 
 

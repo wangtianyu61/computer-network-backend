@@ -12,7 +12,9 @@ from django.http.response import *
 from datetime import datetime
 
 def user_info(request):
-    data_dict = json.loads(str(request.body,encoding='utf-8'))
+    # tmp = str(request.body,encoding='utf-8')
+    # print(tmp)
+    data_dict = json.loads(str(request.body,encoding='utf-8'), strict = False)
     user_id = data_dict['user_id']
     try:
         target_obj = UserInfo.objects.get(user_id = user_id)
@@ -25,17 +27,32 @@ def user_info(request):
             dict_obj['account'].append({"payment_type":account_detail.payment_type,
                                         "account_id":account_detail.account_id,
                                         "priority":account_detail.priority})
-        res = JsonResponse(dict_obj, safe = False)
+        res = http.JsonResponse(dict_obj, safe = False)
     except Exception as e:
         print(e)
-        res = JsonResponse({}, safe = False)
+        res = http.JsonResponse({}, safe = False)
     return res
 
 def user_order_all(request):
+    # tmp = str(request.body,encoding='utf-8')
+    # print(tmp)
     data_dict = json.loads(str(request.body,encoding='utf-8'))
     user_id = data_dict['user_id']
-    query_res_list = list(OrderInfo.objects.filter(user_id = user_id).values())
-    res = JsonResponse(query_res_list, safe = False)
+    query_res_list = list(OrderInfo.objects.filter(customer_id = user_id).values())
+    #change the book name
+    for query_res_elem in query_res_list:
+        query_res_elem["order_time"] = query_res_elem["order_time"].strftime('%Y%m%d %H:%M:%S')
+        #the sum of prices
+        sum_price = 0
+        orderinfo = OrderInfo.objects.get(order_id = query_res_elem["order_id"])
+        order_detail = OrderDetail.objects.filter(order_id = orderinfo)
+        for each_order_entry in order_detail:
+            order_entry = Entry.objects.get(entry_id = each_order_entry.entry_id)
+            sum_price += order_entry.price*each_order_entry.number
+        query_res_elem["total_price"] = sum_price
+    
+    res = http.JsonResponse(query_res_list, safe = False)
+    print("the current order",query_res_list)
     return res        
 
 def user_order_detail(request, pk):
@@ -44,28 +61,62 @@ def user_order_detail(request, pk):
     # need to add the entry name if possible 
     for query_res_elem in query_res_list:
         query_res_elem["entry_name"] = Entry.objects.get(entry_id = query_res_elem["entry_id"]).name 
-    res = JsonResponse(query_res_list, safe = False)
+
+    res = http.JsonResponse(query_res_list, safe = False)
     return res        
 
 def user_order_deliver(request):
     data_dict = json.loads(str(request.body,encoding='utf-8'))
     user_id = data_dict['user_id']
     query_res_list = list(OrderInfo.objects.filter(status = 0).values())
-    res = JsonResponse(query_res_list, safe = False)
+        #change the book name
+    for query_res_elem in query_res_list:
+        query_res_elem["order_time"] = query_res_elem["order_time"].strftime('%Y%m%d %H:%M:%S')
+        #the sum of prices
+        sum_price = 0
+        orderinfo = OrderInfo.objects.get(order_id = query_res_elem["order_id"])
+        order_detail = OrderDetail.objects.filter(order_id = orderinfo)
+        for each_order_entry in order_detail:
+            order_entry = Entry.objects.get(entry_id = each_order_entry.entry_id)
+            sum_price += order_entry.price*each_order_entry.number
+        query_res_elem["total_price"] = sum_price
+    res = http.JsonResponse(query_res_list, safe = False)
     return res        
 
 def user_order_transport(request):
     data_dict = json.loads(str(request.body,encoding='utf-8'))
     user_id = data_dict['user_id']
     query_res_list = list(OrderInfo.objects.filter(status = 1).values())
-    res = JsonResponse(query_res_list, safe = False)
+    #change the book name
+    for query_res_elem in query_res_list:
+        query_res_elem["order_time"] = query_res_elem["order_time"].strftime('%Y%m%d %H:%M:%S')
+        #the sum of prices
+        sum_price = 0
+        orderinfo = OrderInfo.objects.get(order_id = query_res_elem["order_id"])
+        order_detail = OrderDetail.objects.filter(order_id = orderinfo)
+        for each_order_entry in order_detail:
+            order_entry = Entry.objects.get(entry_id = each_order_entry.entry_id)
+            sum_price += order_entry.price*each_order_entry.number
+        query_res_elem["total_price"] = sum_price
+    res = http.JsonResponse(query_res_list, safe = False)
     return res        
 
 def user_order_finished(request):
     data_dict = json.loads(str(request.body,encoding='utf-8'))
     user_id = data_dict['user_id']
     query_res_list = list(OrderInfo.objects.filter(status = 2).values())
-    res = JsonResponse(query_res_list, safe = False)
+    #change the book name
+    for query_res_elem in query_res_list:
+        query_res_elem["order_time"] = query_res_elem["order_time"].strftime('%Y%m%d %H:%M:%S')
+        #the sum of prices
+        sum_price = 0
+        orderinfo = OrderInfo.objects.get(order_id = query_res_elem["order_id"])
+        order_detail = OrderDetail.objects.filter(order_id = orderinfo)
+        for each_order_entry in order_detail:
+            order_entry = Entry.objects.get(entry_id = each_order_entry.entry_id)
+            sum_price += order_entry.price*each_order_entry.number
+        query_res_elem["total_price"] = sum_price
+    res = http.JsonResponse(query_res_list, safe = False)
     return res        
   
 @transaction.atomic
@@ -73,6 +124,7 @@ def edit_user_info(request):
     data_dict = json.loads(str(request.body,encoding='utf-8'))
     user_id = data_dict['user_id']
 
+    # print(data_dict)
     save_tag = transaction.savepoint()
     edit_info = {"success":1, "message":""}
     try:
@@ -83,7 +135,6 @@ def edit_user_info(request):
             del data_dict['account']
 
             target_user.update(**data_dict)
-
             #change the account info    
             ##delete the past
             old_account = UserAccountType.objects.filter(user_id = user_id).delete()
