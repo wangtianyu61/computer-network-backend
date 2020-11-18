@@ -80,7 +80,7 @@ class OrderDetail(models.Model):
     seller_id = models.BigIntegerField()
     deliver_time = models.DateTimeField(null = True)
     postageFee = models.FloatField()
-    receiveType = models.IntegerField()
+    receiveType = models.TextField()
     class Meta:
         db_table = "OrderDetail"
 

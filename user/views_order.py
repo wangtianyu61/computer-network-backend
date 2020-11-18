@@ -106,14 +106,13 @@ def confirm_order_book(request):
         customer_id = data['customer_id']
         payment_type = data['PaymentType']
         order_info = data['order_detail']
-        receive_type = data['ReceiveType']
         # Update OrderInfo
         order.paymentType = payment_type
         order.save()
         # Create OrderDetail
         for book in order_info:
             entry_id = book["entry_id"]
-            amount = book["order_number"]
+            amount = book["inventory"]
             # Update Entry
             entry = Entry.objects.get(entry_id=entry_id)
             entry.customer_inventory -= amount
@@ -129,7 +128,7 @@ def confirm_order_book(request):
             order_detail.deliver_time = datetime.datetime.now()
             order_detail.postageFee = POSTAGE
             order_detail.status = 0
-            order_detail.receiveType = receive_type
+            order_detail.receiveType = UserAccountType.objects.filter(user_id = entry.seller_id)[0].payment_type
             order_detail.save()
     return http.HttpResponse('菊神真帅')
 

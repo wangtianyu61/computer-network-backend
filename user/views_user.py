@@ -59,9 +59,13 @@ def user_order_detail(request, pk):
     order_user_id = OrderInfo.objects.get(order_id = pk)
     query_res_list = list(OrderDetail.objects.filter(order_id = order_user_id).values())
     # need to add the entry name if possible 
+    sum_price = 0
     for query_res_elem in query_res_list:
+        order_entry = Entry.objects.get(entry_id = query_res_elem["entry_id"])
+        query_res_elem['total_price'] = int(query_res_elem["number"])*order_entry.price
         query_res_elem["entry_name"] = Entry.objects.get(entry_id = query_res_elem["entry_id"]).name 
 
+    print('order info', query_res_list)
     res = http.JsonResponse(query_res_list, safe = False)
     return res        
 
@@ -141,7 +145,8 @@ def edit_user_info(request):
             ##add the new
             for account_detail in account_info:
                 account_detail['user_id'] = target_user
-                user_account_info = UserAccountType.objects.create(serial_id = len(UserAccountType.objects.all()) + 1,
+                print(account_detail)
+                user_account_info = UserAccountType.objects.create(serial_id = 2*len(UserAccountType.objects.all()) + 1,
                                                                     user_id = target_user[0], 
                                                                     payment_type = account_detail['payment_type'],
                                                                     account_id = account_detail['account_id'],
