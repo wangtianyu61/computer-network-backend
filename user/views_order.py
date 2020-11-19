@@ -106,7 +106,7 @@ def confirm_order_book(request):
         customer_id = data['customer_id']
         payment_type = data['PaymentType']
         order_info = data['order_detail']
-        receive_type = data['ReceiveType']
+
         # Update OrderInfo
         order.paymentType = payment_type
         order.save()
@@ -153,11 +153,18 @@ def order_of(request, pk):
 ## seller pack the book
 def pack_book_update(request):
     data = eval(str(request.body,encoding='utf-8'))
-    print(data)
+    print(type(data))
     pack_info = {"success":1, "message":""}
     try:
         order_id = data['order_id']
         entry_id = data['entry_id']
+        #delete the entry
+        sent_number = OrderDetail.objects.get(order_id_id = order_id, entry_id = entry_id).number
+        give_entry = Entry.objects.get(entry_id = entry_id)
+        give_entry.seller_inventory = give_entry.seller_inventory - sent_number
+        give_entry.save()
+
+        
         order_info = OrderInfo.objects.get(order_id = order_id)          
         #order_detail = OrderDetail.objects.get(order_id = order_info, entry_id = entry_id)
         order_info.status = 1
