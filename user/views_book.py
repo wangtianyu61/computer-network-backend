@@ -192,15 +192,15 @@ def search_book(request):
                     "original_price":book.original_price,"category":book.category, "description":book.description,
                     "inventory":book.customer_inventory}
         book_images = EntryImage.objects.filter(entry_id=id)
-        book_detail['image'] = [book_image.image for book_image in book_images]
-        book_detail['entry_comment'] = []
-        book_comments = EntryComment.objects.filter(entry_id=id)
-        for comment_item in book_comments:
-            comment_detail = {"entry_comment_id":comment_item.entry_comment_id,"comment_time":comment_item.comment_time.strftime('%Y%m%d %H:%M:%S'), 
-                                "entry_comment":comment_item.entry_comment,"entry_feedback":comment_item.entry_feedback}
-            book_comments["entry_comment"].append(comment_detail)
+        # book_detail['image'] = [book_image.image for book_image in book_images]
+        # book_detail['entry_comment'] = []
+        # book_comments = EntryComment.objects.filter(entry_id=id)
+        # for comment_item in book_comments:
+        #     comment_detail = {"entry_comment_id":comment_item.entry_comment_id,"comment_time":comment_item.comment_time.strftime('%Y%m%d %H:%M:%S'), 
+        #                         "entry_comment":comment_item.entry_comment,"entry_feedback":comment_item.entry_feedback}
+        #     book_comments["entry_comment"].append(comment_detail)
         result_book_list.append(book_detail)
-    return http.JsonResponse({'list':result_book_list},safe=False,json_dumps_params={'ensure_ascii':False})
+    return http.JsonResponse({'book_info':result_book_list},safe=False,json_dumps_params={'ensure_ascii':False})
 
 
 
